@@ -13,42 +13,45 @@ public class ShaderUpdater {
 
 
     public static String loadFile(String fp){
-        String[] str = DataLoader.readTextFile(fp);
-        StringBuilder file = new StringBuilder();
+        if(!new File(fp).exists())
+            return "";
+        try {
+            String[] str = DataLoader.readTextFile(fp);
+            StringBuilder file = new StringBuilder();
 
-        for(int i = 0; i < str.length; i++){
-            file.append(str[i].strip()).append("\n");
+            for(int i = 0; i < str.length; i++){
+                file.append(str[i].strip()).append("\n");
+            }
+            return file.toString();
         }
-        return file.toString();
+        catch (Exception e){
+            return "";
+        }
     }
 
     public static void startSearchThread(){
 
 
-        Thread findFile = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    String tmpFragmentShader = loadFile(fragFilepath);
-                    String tmpVertexShader = loadFile(vertFilepath);
+        Thread findFile = new Thread(() -> {
+            while (true) {
+                String tmpFragmentShader = loadFile(fragFilepath);
+                String tmpVertexShader = loadFile(vertFilepath);
 
-                    boolean fragUpdated = !tmpFragmentShader.equals(fragmentShader);
-                    boolean vertUpdated = !tmpVertexShader.equals(vertexShader);
-                    fragmentShader = tmpFragmentShader;
-                    vertexShader = tmpVertexShader;
-                    if(fragUpdated || vertUpdated){
-                        ActiveShader.update(vertexShader, fragmentShader);
-                    }
+                boolean fragUpdated = !tmpFragmentShader.equals(fragmentShader);
+                boolean vertUpdated = !tmpVertexShader.equals(vertexShader);
+                fragmentShader = tmpFragmentShader;
+                vertexShader = tmpVertexShader;
+                if(fragUpdated || vertUpdated){
+                    ActiveShader.update(vertexShader, fragmentShader);
+                }
 
+                //System.out.println("Frag updated within the last second: " + fragUpdated);
+                //System.out.println("Vert updated within the last second: " + vertUpdated);
 
-                    //System.out.println("Frag updated within the last second: " + fragUpdated);
-                    //System.out.println("Vert updated within the last second: " + vertUpdated);
-
-                    try {
-                        Thread.sleep(1000); // Sleep for 1 second
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    Thread.sleep(1000); // Sleep for 1 second
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         });

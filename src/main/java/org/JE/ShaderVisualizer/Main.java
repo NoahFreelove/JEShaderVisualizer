@@ -8,14 +8,16 @@ import org.joml.Vector2i;
 public class Main {
     public static void main(String[] args) {
         WindowPreferences wp = new WindowPreferences();
-        wp.windowSize = new Vector2i(800,800);
+        wp.windowSize = new Vector2i(1200,1200);
         wp.vSync = true;
         wp.initializeNuklear = true;
         wp.windowResizable = false;
         wp.windowTitle = "Shader";
-        Logger.disableAllLogging();
+        Logger.quietLog = true;
+        Logger.logErrors = true;
         Manager.start(wp);
         ActiveShader.init();
+        ShaderDebug.init();
         ShaderUpdater.startSearchThread();
         Manager.setScene(new VisualizerScene());
     }

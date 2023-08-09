@@ -8,17 +8,28 @@ public class ActiveShader {
     public static ShaderProgram active;
     public static GLAgent queueCompileStatus;
     public static boolean lighting = false;
+    public static boolean fragExists = false;
+    public static boolean vertExists = false;
 
     public static void init(){
         active = ShaderProgram.invalidShader();
+        active.logCommonErrors = false;
     }
     public static void update(String vert, String frag){
         //System.out.println("Updating shader: " + vert + " " + frag);
-        if(vert == null || frag == null){
+        if(vert == null || frag == null || vert.isEmpty() || frag.isEmpty()) {
             active = ShaderProgram.invalidShader();
+            vertExists = !(vert == null || vert.isEmpty());
+            fragExists = !(frag == null || frag.isEmpty());
             return;
         }
-        queueCompileStatus = Manager.queueGLFunction(() -> active = ShaderProgram.ShaderProgramNow(vert,frag,lighting));
+        fragExists = true;
+        vertExists = true;
+        queueCompileStatus = Manager.queueGLFunction(() -> {
+            active = ShaderProgram.ShaderProgramNow(vert,frag,lighting);
+            active.logCommonErrors = false;
+            ShaderDebug.shaderUpdated = true;
+        });
 
     }
 }

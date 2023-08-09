@@ -1,11 +1,11 @@
 <component name="libraryTable">
   <library name="JE2">
     <CLASSES>
-      <root url="jar://$USER_HOME$/Desktop/JE2/out/artifacts/JE2/JE2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../JE2/out/artifacts/JE2_jar/JE2.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
-      <root url="file://$USER_HOME$/Desktop/JE2/src/main/java" />
+      <root url="file://$PROJECT_DIR$/../JE2/src/main/java" />
     </SOURCES>
   </library>
 </component>
