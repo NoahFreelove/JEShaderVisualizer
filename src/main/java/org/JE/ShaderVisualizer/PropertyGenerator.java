@@ -8,6 +8,7 @@ import org.JE.JE2.UI.UIElements.Label;
 import org.JE.JE2.UI.UIElements.Spacer;
 import org.JE.JE2.UI.UIElements.Style.Color;
 import org.JE.JE2.UI.UIElements.TextField;
+import org.JE.JE2.Utility.WindowDialogs;
 
 import java.io.File;
 import java.util.Random;
@@ -26,9 +27,19 @@ public class PropertyGenerator {
                 Random randName = new Random();
                 String name = "Texture" + randName.nextInt(100000);
                 VisualizerScene.renderer.setTexture(Texture.createTexture(name,new Filepath(fp,false),true));
+                ActiveShader.active.supportsTextures = true;
             }
             else {
                 textureField.setValue("File DNE!");
+            }
+        });
+        Button selectFromFileExplorer = new Button("Select...", new Runnable() {
+            @Override
+            public void run() {
+                File f = WindowDialogs.getFile("Choose A Image","", new String[]{"png","jpg","jpeg","bmp"});
+                if(f.exists()){
+                    textureField.setValue(f.getAbsolutePath());
+                }
             }
         });
 
@@ -41,12 +52,22 @@ public class PropertyGenerator {
                 Random randName = new Random();
                 String name = "Normal" + randName.nextInt(100000);
                 VisualizerScene.renderer.setTexture(Texture.createTexture(name,new Filepath(fp,false),true));
+                ActiveShader.active.supportsTextures = true;
             }
             else {
                 textureField.setValue("File DNE!");
             }
         });
-        g.addElements(textureLabel,textureField,setTextureButton,new Spacer(), normalLabel,normalField,setNormalButton);
+        Button selectNormalFromFileExplorer = new Button("Select...", new Runnable() {
+            @Override
+            public void run() {
+                File f = WindowDialogs.getFile("Choose A Image","", new String[]{"png","jpg","jpeg","bmp"});
+                if(f.exists()){
+                    normalField.setValue(f.getAbsolutePath());
+                }
+            }
+        });
+        g.addElements(textureLabel, textureField, setTextureButton, selectFromFileExplorer, new Spacer(), normalLabel,normalField,setNormalButton,selectNormalFromFileExplorer);
 
 
         return g;
