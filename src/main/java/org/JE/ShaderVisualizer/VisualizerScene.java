@@ -2,6 +2,8 @@ package main.java.org.JE.ShaderVisualizer;
 
 import org.JE.JE2.IO.Filepath;
 import org.JE.JE2.Objects.GameObject;
+import org.JE.JE2.Objects.Lights.AmbientLight;
+import org.JE.JE2.Objects.Lights.PointLight;
 import org.JE.JE2.Rendering.Camera;
 import org.JE.JE2.Rendering.Debug.RenderColoredArea;
 import org.JE.JE2.Rendering.Renderers.SpriteRenderer;
@@ -22,15 +24,23 @@ import static org.lwjgl.nuklear.Nuklear.*;
 
 public class VisualizerScene extends Scene {
     public static GameObject renderObject;
-    private static Color color = Color.WHITE;
+    private static Color color = Color.WHITE();
     public static SpriteRenderer renderer;
     private static Checkbox supportsTextures;
+    private static Checkbox supportsLighting;
+    private static Checkbox enablePointLight;
+    private static Checkbox enableAmbientLight;
+
     private static Button debugButton;
     private static Label debugLabel;
     private static Label debugReason;
     private static WrappedLabel moreInfo;
     private static ShaderProgram defaultProgram;
     private static UIWindow debugWindow;
+
+    private static PointLight pointLight;
+    private static AmbientLight ambientLight;
+
     public VisualizerScene(){
         defaultProgram = ShaderProgram.defaultShader();
         Camera mainCam = new Camera();
@@ -49,6 +59,19 @@ public class VisualizerScene extends Scene {
 
         createUI();
 
+        GameObject lightObj = PointLight.pointLightObject(new Vector2f(0,0), 5,2,0.2f,10,5f);
+        pointLight = lightObj.getScript(PointLight.class);
+        if(pointLight == null)
+            pointLight = new PointLight();
+        pointLight.setActive(false);
+
+        GameObject ambientObj = AmbientLight.ambientLightObject(1, Color.WHITE());
+        ambientLight = ambientObj.getScript(AmbientLight.class);
+        if(ambientLight == null)
+            ambientLight = new AmbientLight();
+        ambientLight.setActive(false);
+        add(lightObj);
+        add(ambientObj);
     }
 
     private void createUI() {
@@ -107,8 +130,31 @@ public class VisualizerScene extends Scene {
 
         supportsTextures = new Checkbox(false, "Textured", aBoolean -> ActiveShader.active.supportsTextures = aBoolean);
         supportsTextures.getStyle().setNormalColor(Color.GREEN);
-        supportsTextures.getStyle().setHoverColor(Color.WHITE);
-        uiWindow.addElement(propertiesLabel,supportsTextures,new Spacer(), PropertyGenerator.generateTextureUI());
+        supportsTextures.getStyle().setHoverColor(Color.WHITE());
+
+        supportsLighting = new Checkbox(false, "Lighting", aBoolean -> ActiveShader.active.supportsLighting = aBoolean);
+        supportsLighting.getStyle().setNormalColor(Color.GREEN);
+        supportsLighting.getStyle().setHoverColor(Color.WHITE());
+
+        enablePointLight = new Checkbox(false, "Point Light", aBoolean -> {
+            pointLight.setActive(aBoolean);
+        });
+        enablePointLight.getStyle().setNormalColor(Color.GREEN);
+        enablePointLight.getStyle().setHoverColor(Color.WHITE());
+
+        enableAmbientLight = new Checkbox(false, "Ambient Light", aBoolean -> {
+            ambientLight.setActive(aBoolean);
+        });
+        enableAmbientLight.getStyle().setNormalColor(Color.GREEN);
+        enableAmbientLight.getStyle().setHoverColor(Color.WHITE());
+
+
+        uiWindow.addElement(propertiesLabel,supportsTextures, supportsLighting, enablePointLight, enableAmbientLight,new Spacer(), PropertyGenerator.generateTextureUI(), new Spacer());
+
+
+        Label changeShaderLabel = new Label("Change Shader");
+        changeShaderLabel.getStyle().setTextColor(Color.WHITE());
+        uiWindow.addElement(changeShaderLabel, PropertyGenerator.generateShaderFileUI(), new Spacer());
 
         createDebugWindow();
 
@@ -118,8 +164,8 @@ public class VisualizerScene extends Scene {
     private void createDebugWindow() {
         debugWindow = new UIWindow("Debug",
                 NK_WINDOW_TITLE | NK_WINDOW_BORDER | NK_WINDOW_MINIMIZABLE,
-                new Vector2f(0,650));
-        debugWindow.setSize(new Vector2f(1200,150));
+                new Vector2f(0,1000));
+        debugWindow.setSize(new Vector2f(1200,200));
 
         debugWindow.setBackgroundColor(Color.DARK_GREY);
         debugLabel = new Label("This shader doesn't work or isn't compiled yet.");
@@ -193,14 +239,20 @@ public class VisualizerScene extends Scene {
     }
 
     private void setCircle(){
-        renderer.getTextureSegments()[0].getVao2fRef().setVertices(RenderColoredArea.generateCircleCoords(100));
-
+        renderer.getTextureSegments()[0].getCoords().setVertices(RenderColoredArea.generateCircleCoords(100));
+        renderer.getTextureSegments()[0].getVao().setVertices(RenderColoredArea.generateCircleCoords(100));
         Vector2f scale = new Vector2f(3,3);
         renderObject.getTransform().setScale(scale);
-        renderObject.getTransform().setPosition(0,-0.5f);
+        renderObject.getTransform().setPosition(0,-0.8f);
     }
     private void setSquare(){
-        renderer.getTextureSegments()[0].getVao2fRef().setVertices(new Vector2f[]{
+        renderer.getTextureSegments()[0].getCoords().setVertices(new Vector2f[]{
+                new Vector2f(0,0),
+                new Vector2f(1,0),
+                new Vector2f(1,1),
+                new Vector2f(0,1)
+        });
+        renderer.getTextureSegments()[0].getVao().setVertices(new Vector2f[]{
                 new Vector2f(0,0),
                 new Vector2f(1,0),
                 new Vector2f(1,1),
@@ -212,7 +264,12 @@ public class VisualizerScene extends Scene {
     }
 
     private void setTriangle(){
-        renderer.getTextureSegments()[0].getVao2fRef().setVertices(new Vector2f[]{
+        renderer.getTextureSegments()[0].getCoords().setVertices(new Vector2f[]{
+                new Vector2f(0,0),
+                new Vector2f(0.5f,1),
+                new Vector2f(1,0)
+        });
+        renderer.getTextureSegments()[0].getVao().setVertices(new Vector2f[]{
                 new Vector2f(0,0),
                 new Vector2f(0.5f,1),
                 new Vector2f(1,0)

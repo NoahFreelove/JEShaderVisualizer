@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ShaderVisualizer:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ShaderVisualizer_jar</output-path>
+    <root id="archive" name="ShaderVisualizer.jar">
+      <element id="module-output" name="ShaderVisualizer" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../JE2/out/artifacts/JE2_jar/JE2.jar" path-in-jar="/" />
+      <element id="library" level="project" name="JE2" />
+    </root>
+  </artifact>
+</component>

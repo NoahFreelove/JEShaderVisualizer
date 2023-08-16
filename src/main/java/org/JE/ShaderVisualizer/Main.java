@@ -12,7 +12,7 @@ public class Main {
         wp.vSync = true;
         wp.initializeNuklear = true;
         wp.windowResizable = false;
-        wp.windowTitle = "Shader";
+        wp.windowTitle = "Shader Visualizer";
         Logger.quietLog = true;
         Logger.logErrors = true;
         Manager.start(wp);

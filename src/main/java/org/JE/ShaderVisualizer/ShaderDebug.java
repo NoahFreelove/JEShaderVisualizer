@@ -20,6 +20,8 @@ public class ShaderDebug {
     }
 
     private static void debug(String src, boolean isFrag){
+        if(src == null)
+            return;
         String type = (isFrag? "Fragment" : "Vertex");
         String[] lines = src.split("\n");
         String equalBrackets = equalBrackets(src);
@@ -108,6 +110,7 @@ public class ShaderDebug {
     public static void parseError(String msg){
         if(msg.startsWith("Error with Shader:"))
             return;
+        //System.out.println("Error with Shader: " + msg);
         latestError = msg;
     }
 

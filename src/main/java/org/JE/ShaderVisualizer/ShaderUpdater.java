@@ -8,8 +8,8 @@ import java.io.File;
 public class ShaderUpdater {
     public static volatile String vertexShader;
     public static volatile String fragmentShader;
-    public static volatile String fragFilepath = new Filepath("fragment.frag", true).getPath(false);
-    public static volatile String vertFilepath = new Filepath("vertex.vert", true).getPath(false);
+    public static volatile String fragFilepath = new Filepath("lightSprite.frag", true).getPath(false);
+    public static volatile String vertFilepath = new Filepath("lightSprite.vert", true).getPath(false);
 
 
     public static String loadFile(String fp){
